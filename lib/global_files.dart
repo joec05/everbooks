@@ -3,6 +3,10 @@
 library global_files;
 
 export 'constants/bookshelves/variables.dart';
+export 'constants/handler/enums.dart';
+export 'constants/handler/functions.dart';
+export 'constants/handler/labels_class.dart';
+export 'constants/handler/variables.dart';
 export 'constants/limit/variables.dart';
 export 'constants/private_data.dart';
 export 'constants/shimmer/variables.dart';
@@ -11,6 +15,7 @@ export 'constants/ui/screen_size/functions.dart';
 export 'constants/unknown_item/variables.dart';
 export 'controllers/book_details_controller.dart';
 export 'controllers/bookshelf_volumes_controller.dart';
+export 'controllers/handler/handler_controller.dart';
 export 'controllers/main_controller.dart';
 export 'controllers/search_controller.dart';
 export 'main.dart';

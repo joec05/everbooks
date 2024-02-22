@@ -1,10 +1,7 @@
 import 'dart:io';
 import 'package:book_list_app/global_files.dart';
-import 'package:http/http.dart' as http;
-import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:googleapis/books/v1.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,71 +36,20 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  AssetImage assetImage = const AssetImage('assets/images/icon.png');
 
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 2), (){
-      obtainCredentials();
-    });
-  }
-
-  Future<void> obtainCredentials() async {
-    if(!await authRepo.signInConfig.isSignedIn()){
-      await authRepo.signInConfig.signIn();
-    }else{
-      await authRepo.signInConfig.signInSilently(
-        reAuthenticate: true
-      );
-    }
-    await authRepo.signInConfig.authenticatedClient().then((value){
-      authRepo.client = value;
-      authRepo.tokens = authRepo.client == null ? null : UserAuthTokensClass(
-        authRepo.client!.credentials.accessToken.data,
-        authRepo.client!.credentials.accessToken.expiry.toIso8601String(),
-        authRepo.client!.credentials.idToken ?? '',
-        authRepo.client!.credentials.refreshToken ?? ''
-      );
-      authRepo.profileData = authRepo.signInConfig.currentUser == null ? null : UserProfileClass(
-        authRepo.signInConfig.currentUser!.id,
-        authRepo.signInConfig.currentUser!.displayName ?? '',
-        authRepo.signInConfig.currentUser!.email,
-        authRepo.signInConfig.currentUser!.photoUrl ?? ''
-      );
-      appStateRepo.booksApi = BooksApi(authRepo.client as http.Client);
-      if(mounted){
-        Navigator.pushAndRemoveUntil(
-          context,
-          NavigationTransition(
-            page: const MainPageWidget()
-          ),
-          (Route<dynamic> route) => false
-        );
-      }
-      return;
-    });
+    authRepo.obtainCredentials(context);
   }
 
   @override
   Widget build(BuildContext context) {
-    precacheImage(assetImage, context);
     return Scaffold(
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        decoration: defaultAppBarDecoration,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Image(
-              image: assetImage,
-              width: getScreenWidth() * 0.4, 
-              height: getScreenWidth() * 0.4
-            ),
-          ],
-        )
+        decoration: defaultAppBarDecoration
       )
     );
   }

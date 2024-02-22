@@ -23,9 +23,19 @@ class BookDetailsController {
   }
 
   void getData() async{
-    await authRepo.verifyAccessToken();
-    Volume volume = await appStateRepo.booksApi!.volumes.get(volumeData.id!);
-    appStateRepo.globalVolumes[volume.id!] = volume;
+    try {
+      await authRepo.verifyAccessToken(context);
+      Volume volume = await appStateRepo.booksApi!.volumes.get(volumeData.id!);
+      appStateRepo.globalVolumes[volume.id!] = volume;
+    } catch (_) {
+      if(mounted) {
+        handler.displaySnackbar(
+          context, 
+          SnackbarType.error, 
+          tErr.api
+        );
+      }
+    }
     if(mounted){
       isLoading.value = false;
     }
@@ -111,27 +121,42 @@ class BookDetailsController {
   }
 
   void updateVolumeBookshelves(List<int> originalList, List<int> newList) async{
-    List<int> combinedList = {...originalList, ...newList}.toList();
-    for(int i = 0; i < combinedList.length; i++){
-      if(originalList.contains(combinedList[i]) && !newList.contains(combinedList[i])){
-        appStateRepo.booksApi!.mylibrary.bookshelves.removeVolume(combinedList[i].toString(), volumeData.id!);
-        appStateRepo.globalBookshelves[authRepo.profileData!.id]![combinedList[i]]!.volumes.remove(volumeData.id!);
-        UpdateBookshelfVolumesStreamClass().emitData(BookshelfVolumesStreamControllerClass(
-          combinedList[i]
-        ));
-      }else if(!originalList.contains(combinedList[i]) && newList.contains(combinedList[i])){
-        appStateRepo.booksApi!.mylibrary.bookshelves.addVolume(combinedList[i].toString(), volumeData.id!);
-        appStateRepo.globalBookshelves[authRepo.profileData!.id]![combinedList[i]]!.volumes.insert(0, volumeData.id!);
-        UpdateBookshelfVolumesStreamClass().emitData(BookshelfVolumesStreamControllerClass(
-          combinedList[i]
-        ));
+    try {
+      List<int> combinedList = {...originalList, ...newList}.toList();
+      for(int i = 0; i < combinedList.length; i++){
+        if(originalList.contains(combinedList[i]) && !newList.contains(combinedList[i])){
+          appStateRepo.booksApi!.mylibrary.bookshelves.removeVolume(combinedList[i].toString(), volumeData.id!);
+          appStateRepo.globalBookshelves[authRepo.profileData!.id]![combinedList[i]]!.volumes.remove(volumeData.id!);
+          UpdateBookshelfVolumesStreamClass().emitData(BookshelfVolumesStreamControllerClass(
+            combinedList[i]
+          ));
+        }else if(!originalList.contains(combinedList[i]) && newList.contains(combinedList[i])){
+          appStateRepo.booksApi!.mylibrary.bookshelves.addVolume(combinedList[i].toString(), volumeData.id!);
+          appStateRepo.globalBookshelves[authRepo.profileData!.id]![combinedList[i]]!.volumes.insert(0, volumeData.id!);
+          UpdateBookshelfVolumesStreamClass().emitData(BookshelfVolumesStreamControllerClass(
+            combinedList[i]
+          ));
+        }
+      }
+      if(mounted) {
+        handler.displaySnackbar(
+          context, 
+          SnackbarType.successful, 
+          tSuccess.updated
+        );
+      }
+    } catch (_) {
+      if(mounted) {
+        handler.displaySnackbar(
+          context, 
+          SnackbarType.error, 
+          tErr.api
+        );
       }
     }
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Successfully updated!!!')
-      )
-    );
+    if(mounted){
+      isLoading.value = false;
+    }
   }
 
   

@@ -40,6 +40,7 @@ class __ViewBookshelfVolumesStatefulState extends State<_ViewBookshelfVolumesSta
     super.initState();
     bookshelfData = widget.bookshelfData;
     controller = BookshelfVolumesController(context, bookshelfData);
+    controller.initializeController();
     updateBookshelfVolumesStreamClassSubscription = UpdateBookshelfVolumesStreamClass().updateBookshelfStream.listen((BookshelfVolumesStreamControllerClass data) {
       if(mounted){
         if(data.bookshelfID == bookshelfData.bookshelf.id!){
