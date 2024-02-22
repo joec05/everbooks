@@ -20,7 +20,7 @@ class UpdateBookshelfVolumesStreamClass {
     _updateBookshelfVolumesStreamController = StreamController<BookshelfVolumesStreamControllerClass>.broadcast();
   }
 
-  Stream<BookshelfVolumesStreamControllerClass> get userAnimeListStream => _updateBookshelfVolumesStreamController.stream;
+  Stream<BookshelfVolumesStreamControllerClass> get updateBookshelfStream => _updateBookshelfVolumesStreamController.stream;
 
 
   void removeListener(){

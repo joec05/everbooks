@@ -1,0 +1,1 @@
+int defaultShimmerLength = 5;

@@ -1,11 +1,5 @@
 import 'dart:io';
-import 'package:book_list_app/appdata/global_functions.dart';
-import 'package:book_list_app/class/user_auth_tokens_class.dart';
-import 'package:book_list_app/class/user_profile_class.dart';
-import 'package:book_list_app/main_page.dart';
-import 'package:book_list_app/state/main.dart';
-import 'package:book_list_app/styles/app_styles.dart';
-import 'package:book_list_app/transition/navigation_transition.dart';
+import 'package:book_list_app/global_files.dart';
 import 'package:http/http.dart' as http;
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
 import 'package:flutter/material.dart';
@@ -56,28 +50,28 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> obtainCredentials() async {
-    if(!await appState.signInConfig.isSignedIn()){
-      await appState.signInConfig.signIn();
+    if(!await authRepo.signInConfig.isSignedIn()){
+      await authRepo.signInConfig.signIn();
     }else{
-      await appState.signInConfig.signInSilently(
+      await authRepo.signInConfig.signInSilently(
         reAuthenticate: true
       );
     }
-    await appState.signInConfig.authenticatedClient().then((value){
-      appState.client = value;
-      appState.tokens = appState.client == null ? null : UserAuthTokensClass(
-        appState.client!.credentials.accessToken.data,
-        appState.client!.credentials.accessToken.expiry.toIso8601String(),
-        appState.client!.credentials.idToken ?? '',
-        appState.client!.credentials.refreshToken ?? ''
+    await authRepo.signInConfig.authenticatedClient().then((value){
+      authRepo.client = value;
+      authRepo.tokens = authRepo.client == null ? null : UserAuthTokensClass(
+        authRepo.client!.credentials.accessToken.data,
+        authRepo.client!.credentials.accessToken.expiry.toIso8601String(),
+        authRepo.client!.credentials.idToken ?? '',
+        authRepo.client!.credentials.refreshToken ?? ''
       );
-      appState.profileData = appState.signInConfig.currentUser == null ? null : UserProfileClass(
-        appState.signInConfig.currentUser!.id,
-        appState.signInConfig.currentUser!.displayName ?? '',
-        appState.signInConfig.currentUser!.email,
-        appState.signInConfig.currentUser!.photoUrl ?? ''
+      authRepo.profileData = authRepo.signInConfig.currentUser == null ? null : UserProfileClass(
+        authRepo.signInConfig.currentUser!.id,
+        authRepo.signInConfig.currentUser!.displayName ?? '',
+        authRepo.signInConfig.currentUser!.email,
+        authRepo.signInConfig.currentUser!.photoUrl ?? ''
       );
-      appState.booksApi = BooksApi(appState.client as http.Client);
+      appStateRepo.booksApi = BooksApi(authRepo.client as http.Client);
       if(mounted){
         Navigator.pushAndRemoveUntil(
           context,

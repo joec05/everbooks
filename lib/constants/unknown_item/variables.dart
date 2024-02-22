@@ -1,0 +1,1 @@
+String unknownItemLink = 'assets/images/unknown-item.png';

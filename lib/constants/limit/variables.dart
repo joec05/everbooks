@@ -1,0 +1,1 @@
+int maxFrontDisplay = 10;
