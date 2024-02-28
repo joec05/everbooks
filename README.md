@@ -39,5 +39,3 @@ Currently on pending
 ## Everbooks in display
 
 ![Everbooks demo 1](https://github.com/joec05/files/blob/main/gbook_client/demo_1.png?raw=true "Everbooks demo 1")
-
-![Everbooks demo 2](https://github.com/joec05/files/blob/main/gbook_client/demo_2.png?raw=true "Everbooks demo 2")

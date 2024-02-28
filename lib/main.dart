@@ -18,10 +18,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Everbooks',
-      theme: ThemeData(
-        colorScheme: const ColorScheme.dark(),
-        useMaterial3: true,
-      ),
+      theme: globalTheme.dark,
       home: const MyHomePage(title: 'Everbooks Home Page'),
     );
   }
