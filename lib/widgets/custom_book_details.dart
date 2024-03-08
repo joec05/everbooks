@@ -31,9 +31,12 @@ class CustomBookDetailsState extends State<CustomBookDetails>{
     super.dispose();
   }
 
-  ImageProvider generatePosterImage(){
+  ImageProvider? generatePosterImage(){
     String link = '';
-    VolumeVolumeInfoImageLinks imgLinks = volumeData!.volumeInfo!.imageLinks!;
+    VolumeVolumeInfoImageLinks? imgLinks = volumeData!.volumeInfo!.imageLinks;
+    if(imgLinks == null) {
+      return null;
+    }
     if(imgLinks.extraLarge != null){
       link = imgLinks.extraLarge!;
     }else if(imgLinks.large != null){
@@ -120,18 +123,23 @@ class CustomBookDetailsState extends State<CustomBookDetails>{
     }
     
     List<String> categories = [];
-    for(int i = 0; i < volumeData!.volumeInfo!.categories!.length; i++){
-      String category = volumeData!.volumeInfo!.categories![i];
-      if(category.contains('/')){
-        List<String> subCategories = category.split('/');
-        categories.addAll(subCategories.map((e) => e.trim()).toList());
-      }else{
-        categories.add(category);
+    ImageProvider? poster;
+    if(volumeData!.volumeInfo != null && volumeData!.volumeInfo!.categories != null) {
+      for(int i = 0; i < volumeData!.volumeInfo!.categories!.length; i++){
+        String category = volumeData!.volumeInfo!.categories![i];
+        if(category.contains('/')){
+          List<String> subCategories = category.split('/');
+          categories.addAll(subCategories.map((e) => e.trim()).toList());
+        }else{
+          categories.add(category);
+        }
+      }
+      categories = categories.toSet().toList();
+      poster = generatePosterImage();
+      if(poster != null) {
+        precacheImage(poster, context);
       }
     }
-    categories = categories.toSet().toList();
-    ImageProvider poster = generatePosterImage();
-    precacheImage(poster, context);
     
     return ListView(
       children: [
@@ -142,7 +150,7 @@ class CustomBookDetailsState extends State<CustomBookDetails>{
               width: double.infinity,
               height: getScreenHeight() * 0.4,
               decoration: BoxDecoration(
-                image: volumeData!.volumeInfo!.imageLinks!.smallThumbnail != null ?
+                image: volumeData!.volumeInfo!.imageLinks != null && volumeData!.volumeInfo!.imageLinks!.smallThumbnail != null ?
                   DecorationImage(
                     fit: BoxFit.cover,
                     image: NetworkImage(
@@ -168,18 +176,26 @@ class CustomBookDetailsState extends State<CustomBookDetails>{
                     ),
                   ),
                   Center(
-                    child: Image(
-                      image: poster,
-                      width: getScreenWidth() * 0.4,
-                      height: getScreenHeight() * 0.35,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => Image.asset(
+                    child: poster != null ? 
+                      Image(
+                        image: poster,
+                        width: getScreenWidth() * 0.4,
+                        height: getScreenHeight() * 0.35,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => Image.asset(
+                          unknownItemLink,
+                          width: getScreenWidth() * 0.4,
+                          height: getScreenHeight() * 0.35,
+                          fit: BoxFit.cover,
+                        ),
+                      )
+                    :
+                      Image.asset(
                         unknownItemLink,
                         width: getScreenWidth() * 0.4,
                         height: getScreenHeight() * 0.35,
                         fit: BoxFit.cover,
-                      ),
-                    )
+                      )
                   ),
                 ],
               ),
